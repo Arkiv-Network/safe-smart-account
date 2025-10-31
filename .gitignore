@@ -10,7 +10,6 @@ env/
 dist/
 .env
 bin/
-solc
 coverage/
 coverage.json
 yarn-error.log
@@ -21,3 +20,9 @@ typechain-types
 .certora_internal
 .certora_recent_jobs.json
 .zip-output-url.txt
+
+# Nix and Direnv
+.direnv/
+result/
+.envrc.local
+

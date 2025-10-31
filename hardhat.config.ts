@@ -82,7 +82,13 @@ const userConfig: HardhatUserConfig = {
         target: "ethers-v6",
     },
     solidity: {
-        compilers: [{ version: primarySolidityVersion, settings: soliditySettings }, { version: defaultSolidityVersion }],
+        compilers: [
+            {
+                version: primarySolidityVersion,
+                settings: soliditySettings,
+            },
+            { version: defaultSolidityVersion },
+        ],
     },
     networks: {
         hardhat: {
@@ -135,6 +141,21 @@ const userConfig: HardhatUserConfig = {
             ...sharedNetworkConfig,
             url: "https://sepolia.era.zksync.dev",
         },
+        anvil: {
+            ...sharedNetworkConfig,
+            url: "http://127.0.0.1:8545",
+            chainId: 560048,
+        },
+        hoodi: {
+            ...sharedNetworkConfig,
+            url: NODE_URL || "http://localhost:8545",
+            chainId: 560048,
+        },
+        hoodil2: {
+            ...sharedNetworkConfig,
+            url: NODE_URL || "http://localhost:8545",
+            chainId: 393530,
+        },
     },
     deterministicDeployment,
     namedAccounts: {
@@ -156,4 +177,23 @@ if (NODE_URL) {
         url: NODE_URL,
     };
 }
+
+// Added to be able to pass solidity 0.7.6
+import { subtask } from "hardhat/config";
+import { TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD } from "hardhat/builtin-tasks/task-names";
+
+subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD).setAction(async (args, _hre, runSuper) => {
+    if (args.solcVersion === "0.7.6") {
+        return {
+            compilerPath: process.env.SOLIDITY_PATH,
+            isSolcJs: false,
+            version: args.solcVersion,
+            longVersion: "0.7.6+commit.7338295f",
+        };
+    }
+
+    // Fallback to default behavior for other versions
+    return runSuper();
+});
+
 export default userConfig;
